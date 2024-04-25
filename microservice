@@ -1,1 +1,63 @@
+1.User Interface:
+    -Two UIs: Home Screen and Search Page
+    -Home Screen displays personalized/general recommendations
+    -Search Page allows users to search based on text input
 
+2.Inbound Services:
+    -Interact with supplier systems to fetch relevant data
+    -Flow new supplier data or inventory changes into the system via Kafka events
+
+3.Item Service:
+    -Listens to Kafka for new items and exposes APIs for item management
+    -Stores item data in MongoDB due to unstructured nature
+    
+4.Search Consumer:
+    -Processes new items from Kafka and formats data for storage in Elasticsearch
+    -Utilizes Elasticsearch for efficient text-based search and fuzzy search
+
+5.Search Service:
+    -Exposes APIs for filtering, sorting, and searching products
+    -Interfaces with Serviceability and TAT service to determine delivery feasibility and ETA
+
+6.Wishlist and Cart Services:
+    -Provides APIs for managing wishlists and carts
+    -Stored on MySQL databases, potentially on separate hardware for scalability
+
+7.Kafka Event Handling:
+    -Events from search, wishlist, and cart services feed into Kafka for analytics
+
+8.Analytics:
+    -Spark streaming consumer generates real-time reports
+    -Data dumped into Hadoop cluster for further analysis and recommendation generation
+
+9.User Service:
+    -Repository of user data with APIs for CRUD operations
+    -Utilizes MySQL database with Redis cache for performance
+
+10.Serviceability and TAT Service:
+    -Determines delivery feasibility and ETA based on warehouse and logistic data
+    -Uses Logistic Service and Warehouse Service for relevant information
+
+11.Order Taking Service:
+    -Initiates order placement and interacts with inventory and payment services
+    -Ensures ACID properties with MySQL database
+    -Utilizes Redis for order management and status tracking
+
+12.Purchase and Checkout Flow:
+    -Involves order taking, inventory update, payment processing, and order status management
+    -Ensures consistency and handles edge cases like failed payments and expired orders
+
+13.Order Management Optimization:
+    -Completed orders moved to Cassandra for archival
+    -Historical order service provides APIs for accessing past orders
+
+14.Orders View:
+    -Intermediary service fetches ongoing and completed orders from order processing and historical services
+
+15.Notification Service:
+    -Notifies users or sellers about order updates
+    -Kafka events feed into Spark Streaming for real-time reports and Hadoop for deeper analysis
+
+16.Recommendation System:
+    -Hadoop cluster runs algorithms for personalized recommendations
+    -Recommendation Service stores and serves recommendations based on user preferences
