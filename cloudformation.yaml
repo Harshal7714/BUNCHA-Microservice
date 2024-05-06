@@ -1,0 +1,45 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'AWS CloudFormation template to create an EKS cluster with a nodegroup'
+
+Parameters:
+  ClusterName:
+    Type: String
+    Default: MyEksCluster
+    Description: Name of the EKS cluster
+  NodeInstanceType:
+    Type: String
+    Default: t2.micro
+    Description: Instance type for EKS nodes
+  NodeImageId:
+    Type: AWS::EC2::Image::Id
+    Description: The Amazon EC2 Image ID to use for the nodes in the EKS Node Group
+    Default: ami-04b70fa74e45c3917
+
+Resources:
+  EKSCluster:
+    Type: AWS::EKS::Cluster
+    Properties:
+      Name: !Ref ClusterName
+      Version: "1.29"
+      RoleArn: 'arn:aws:iam::277186370343:role/aws-service-role/eks.amazonaws.com/AWSServiceRoleForAmazonEKS' # Replace with your IAM role ARN
+      ResourcesVpcConfig:
+        SubnetIds:
+          - subnet-034afdf860d3ddcf1 # Replace with subnet ID from AZ1
+          - subnet-05266e5cbf4e304df # Replace with subnet ID from AZ2
+
+  EKSNodegroup:
+    Type: AWS::EKS::Nodegroup
+    Properties:
+      ClusterName: !Ref EKSCluster
+      NodegroupName: MyNodegroup
+      ScalingConfig:
+        MinSize: 1
+        MaxSize: 3
+        DesiredSize: 2
+      Subnets:
+        - subnet-034afdf860d3ddcf1 # Use the same subnets as the EKS cluster
+        - subnet-05266e5cbf4e304df
+      InstanceTypes:
+        - !Ref NodeInstanceType
+      NodeRole: 'arn:aws:iam::277186370343:role/aws-service-role/eks.amazonaws.com/AWSServiceRoleForAmazonEKS' # Replace with the IAM role ARN for nodes
+      DiskSize: 20 # Adjust disk size as needed
